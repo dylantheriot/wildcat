@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:speech_recognition/speech_recognition.dart';
 import 'class_year_enums.dart';
+import 'class_year_button.dart';
+import 'globals.dart';
 
 void main() => runApp(MyApp());
 
@@ -9,6 +11,7 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       home: VoiceHome(),
+      theme: ThemeData.dark(),
     );
   }
 }
@@ -65,45 +68,63 @@ class _VoiceHomeState extends State<VoiceHome> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: Container(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          crossAxisAlignment: CrossAxisAlignment.center,
-          children: <Widget>[
-            Row(),
-            Row(),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: <Widget>[
-                FloatingActionButton(
-                  child: Icon(Icons.mic),
-                  onPressed: () {
-                    _speechRecognition
-                        .listen(locale: "en_US")
-                        .then((result) => print("yo"));
-                  },
-                  backgroundColor: Colors.pink,
-                ),
-              ],
-            ),
-            Container(
-              width: MediaQuery.of(context).size.width * 0.8,
-              decoration: BoxDecoration(
-                color: Colors.cyanAccent[100],
-                borderRadius: BorderRadius.circular(6.0),
-              ),
-              padding: EdgeInsets.symmetric(
-                vertical: 8.0,
-                horizontal: 12.0,
-              ),
-              child: Center(
-                child: Text(
-                  resultText,
-                  style: TextStyle(fontSize: 24.0),
+      body: SafeArea(
+        child: Container(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: <Widget>[
+              Expanded(
+                child: Row(
+                  children: <Widget>[
+                    Expanded(child: ClassYearButton(classYear: 'Freshman',)),
+                    Expanded(child: ClassYearButton(classYear: 'Sophomore',)),
+                  ],
                 ),
               ),
-            )
-          ],
+              Expanded(
+                child: Row(
+                  children: <Widget>[
+                    Expanded(child: ClassYearButton(classYear: 'Junior')),
+                    Expanded(child: ClassYearButton(classYear: 'Senior',)),
+                  ],
+                ),
+              ),
+              Container(
+                child: Image.network('https://brandguide.tamu.edu/assets/img/logos/tam-logo.png')),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: <Widget>[
+                  FloatingActionButton(
+                    child: Icon(Icons.mic),
+                    onPressed: () {
+                      _speechRecognition
+                          .listen(locale: "en_US")
+                          .then((result) => print("yo"));
+                    },
+                    backgroundColor: Colors.pink,
+                  ),
+                ],
+              ),
+              Container(
+                width: MediaQuery.of(context).size.width * 0.8,
+                decoration: BoxDecoration(
+                  color: Colors.cyanAccent[100],
+                  borderRadius: BorderRadius.circular(6.0),
+                ),
+                margin: EdgeInsets.all(30.0),
+                padding: EdgeInsets.symmetric(
+                  vertical: 8.0,
+                  horizontal: 12.0,
+                ),
+                child: Center(
+                  child: Text(
+                    resultText,
+                    style: TextStyle(fontSize: 24.0),
+                  ),
+                ),
+              )
+            ],
+          ),
         ),
       ),
     );
