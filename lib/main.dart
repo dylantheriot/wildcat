@@ -6,15 +6,15 @@ import 'globals.dart';
 
 void main() => runApp(MyApp());
 // Color(0xFF800000)
-Color activeColor = Colors.blue;
-Color inactiveColor = Colors.red;
+Color activeColor = Color(0xFF500000);
+Color inactiveColor = Color(0xFF707373);
 
 class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
       home: VoiceHome(),
-      theme: ThemeData.dark(),
+      debugShowCheckedModeBanner: false,
     );
   }
 }
@@ -158,12 +158,12 @@ class _VoiceHomeState extends State<VoiceHome> {
                     ),
                     Expanded(
                         child: GestureDetector(
-                        onTap: () {
-                          setState(() {
-                            updateColor(ClassYear.senior);
-                          });
-                          gCurrentClassYear = ClassYear.senior;
-                        },
+                            onTap: () {
+                              setState(() {
+                                updateColor(ClassYear.senior);
+                              });
+                              gCurrentClassYear = ClassYear.senior;
+                            },
                             child: ClassYearButton(
                               classYear: 'Senior',
                               colour: seniorColor,
@@ -171,9 +171,6 @@ class _VoiceHomeState extends State<VoiceHome> {
                   ],
                 ),
               ),
-              Container(
-                  child: Image.network(
-                      'https://brandguide.tamu.edu/assets/img/logos/tam-logo.png')),
               Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: <Widget>[
@@ -184,28 +181,40 @@ class _VoiceHomeState extends State<VoiceHome> {
                           .listen(locale: "en_US")
                           .then((result) => print("yo"));
                     },
-                    backgroundColor: Colors.pink,
+                    backgroundColor: Color(0xFF998542),
                   ),
                 ],
               ),
-              Container(
-                width: MediaQuery.of(context).size.width * 0.8,
-                decoration: BoxDecoration(
-                  color: Colors.cyanAccent[100],
-                  borderRadius: BorderRadius.circular(6.0),
-                ),
-                margin: EdgeInsets.all(30.0),
-                padding: EdgeInsets.symmetric(
-                  vertical: 8.0,
-                  horizontal: 12.0,
-                ),
-                child: Center(
-                  child: Text(
-                    resultText,
-                    style: TextStyle(fontSize: 24.0),
+              Expanded(
+                child: Container(
+                  width: MediaQuery.of(context).size.width * 0.8,
+                  decoration: BoxDecoration(
+                    color: Color(0xFF003C71),
+                    borderRadius: BorderRadius.circular(6.0),
+                  ),
+                  margin: EdgeInsets.all(30.0),
+                  padding: EdgeInsets.symmetric(
+                    vertical: 8.0,
+                    horizontal: 12.0,
+                  ),
+                  child: Center(
+                    child: Text(
+                      resultText,
+                      style: TextStyle(fontSize: 24.0, color: Colors.white),
+                    ),
                   ),
                 ),
-              )
+              ),
+              Container(
+                width: 150.0,
+                height: 120.0,
+                alignment: Alignment.center,
+                decoration: new BoxDecoration(
+                  image: DecorationImage(
+                      image: NetworkImage('https://brandguide.tamu.edu/assets/img/logos/tam-logo.png'),
+                      fit: BoxFit.fill),
+                ),
+              ),
             ],
           ),
         ),

@@ -9,12 +9,16 @@ class ClassYearButton extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
+      
         margin: EdgeInsets.all(15.0),
         decoration: BoxDecoration(
     color: colour,
     borderRadius: BorderRadius.circular(10.0),
         ),
-        child: Text(classYear),
+        child: ConstrainedBox(constraints: BoxConstraints(
+          minHeight: 300.0,
+          minWidth: 100.0,
+        ),child: Center(child: Text(classYear, style: TextStyle(fontSize: 30.0, color: Colors.white)))),
       );
   }
 }
