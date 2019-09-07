@@ -5,6 +5,9 @@ import 'class_year_button.dart';
 import 'globals.dart';
 
 void main() => runApp(MyApp());
+// Color(0xFF800000)
+Color activeColor = Colors.blue;
+Color inactiveColor = Colors.red;
 
 class MyApp extends StatelessWidget {
   @override
@@ -25,6 +28,11 @@ class _VoiceHomeState extends State<VoiceHome> {
   SpeechRecognition _speechRecognition;
 
   String resultText = "";
+
+  Color freshManColor = activeColor;
+  Color sophomoreColor = inactiveColor;
+  Color juniorColor = inactiveColor;
+  Color seniorColor = inactiveColor;
 
   @override
   void initState() {
@@ -65,6 +73,30 @@ class _VoiceHomeState extends State<VoiceHome> {
         .then((result) => print("yo")));
   }
 
+  void updateColor(ClassYear year) {
+    if (year == ClassYear.freshman) {
+      freshManColor = activeColor;
+      sophomoreColor = inactiveColor;
+      juniorColor = inactiveColor;
+      seniorColor = inactiveColor;
+    } else if (year == ClassYear.sophomore) {
+      freshManColor = inactiveColor;
+      sophomoreColor = activeColor;
+      juniorColor = inactiveColor;
+      seniorColor = inactiveColor;
+    } else if (year == ClassYear.junior) {
+      freshManColor = inactiveColor;
+      sophomoreColor = inactiveColor;
+      juniorColor = activeColor;
+      seniorColor = inactiveColor;
+    } else if (year == ClassYear.senior) {
+      freshManColor = inactiveColor;
+      sophomoreColor = inactiveColor;
+      juniorColor = inactiveColor;
+      seniorColor = activeColor;
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -76,21 +108,72 @@ class _VoiceHomeState extends State<VoiceHome> {
               Expanded(
                 child: Row(
                   children: <Widget>[
-                    Expanded(child: ClassYearButton(classYear: 'Freshman',)),
-                    Expanded(child: ClassYearButton(classYear: 'Sophomore',)),
+                    Expanded(
+                      child: GestureDetector(
+                        onTap: () {
+                          setState(() {
+                            updateColor(ClassYear.freshman);
+                          });
+                          gCurrentClassYear = ClassYear.freshman;
+                        },
+                        child: ClassYearButton(
+                          classYear: 'Freshman',
+                          colour: freshManColor,
+                        ),
+                      ),
+                    ),
+                    Expanded(
+                      child: GestureDetector(
+                        onTap: () {
+                          setState(() {
+                            updateColor(ClassYear.sophomore);
+                          });
+                          gCurrentClassYear = ClassYear.sophomore;
+                        },
+                        child: ClassYearButton(
+                          classYear: 'Sophomore',
+                          colour: sophomoreColor,
+                        ),
+                      ),
+                    ),
                   ],
                 ),
               ),
               Expanded(
                 child: Row(
                   children: <Widget>[
-                    Expanded(child: ClassYearButton(classYear: 'Junior')),
-                    Expanded(child: ClassYearButton(classYear: 'Senior',)),
+                    Expanded(
+                      child: GestureDetector(
+                        onTap: () {
+                          setState(() {
+                            updateColor(ClassYear.junior);
+                          });
+                          gCurrentClassYear = ClassYear.junior;
+                        },
+                        child: ClassYearButton(
+                          classYear: 'Junior',
+                          colour: juniorColor,
+                        ),
+                      ),
+                    ),
+                    Expanded(
+                        child: GestureDetector(
+                        onTap: () {
+                          setState(() {
+                            updateColor(ClassYear.senior);
+                          });
+                          gCurrentClassYear = ClassYear.senior;
+                        },
+                            child: ClassYearButton(
+                              classYear: 'Senior',
+                              colour: seniorColor,
+                            ))),
                   ],
                 ),
               ),
               Container(
-                child: Image.network('https://brandguide.tamu.edu/assets/img/logos/tam-logo.png')),
+                  child: Image.network(
+                      'https://brandguide.tamu.edu/assets/img/logos/tam-logo.png')),
               Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: <Widget>[
