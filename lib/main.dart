@@ -29,20 +29,33 @@ class _VoiceHomeState extends State<VoiceHome> {
     initSpeechRecognizer();
   }
 
+  void checkWildcat(ClassYear x, String finalText) {
+    if (x == ClassYear.freshman && finalText == "23") {
+      print("FRESHMAN");
+    } else if (x == ClassYear.sophomore && finalText == "22") {
+      print("SOHOMORE");
+    } else if (x == ClassYear.junior && finalText == "21") {
+      print("JUNIOR");
+    } else if (x == ClassYear.senior && finalText == "20") {
+      print("SENIOR");
+    } else {
+      print("NOBODY");
+    }
+  }
+
   void initSpeechRecognizer() {
     _speechRecognition = SpeechRecognition();
 
-    _speechRecognition.setRecognitionResultHandler(
-        (String speech) {
-          List<String> speechList = speech.split(" ");
-          String finalText = speechList[speechList.length - 1];  
-          if (finalText == "stop") {
-            _speechRecognition.stop();
-          }
-        
-          setState(() => (resultText = finalText));
-          }
-        );
+    _speechRecognition.setRecognitionResultHandler((String speech) {
+      List<String> speechList = speech.split(" ");
+      String finalText = speechList[speechList.length - 1];
+      checkWildcat(ClassYear.freshman, finalText);
+      if (finalText == "stop") {
+        _speechRecognition.stop();
+      }
+
+      setState(() => (resultText = finalText));
+    });
 
     _speechRecognition.setRecognitionCompleteHandler(() => _speechRecognition
         .listen(locale: "en_US")
@@ -57,21 +70,17 @@ class _VoiceHomeState extends State<VoiceHome> {
           mainAxisAlignment: MainAxisAlignment.center,
           crossAxisAlignment: CrossAxisAlignment.center,
           children: <Widget>[
-            Row(
-
-            ),
-            Row(
-
-            ),
+            Row(),
+            Row(),
             Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: <Widget>[
                 FloatingActionButton(
                   child: Icon(Icons.mic),
                   onPressed: () {
-                      _speechRecognition
-                          .listen(locale: "en_US")
-                          .then((result) => print("yo"));
+                    _speechRecognition
+                        .listen(locale: "en_US")
+                        .then((result) => print("yo"));
                   },
                   backgroundColor: Colors.pink,
                 ),
