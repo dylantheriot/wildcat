@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:speech_recognition/speech_recognition.dart';
+import 'class_year_enums.dart';
 
 void main() => runApp(MyApp());
 
@@ -19,8 +20,6 @@ class VoiceHome extends StatefulWidget {
 
 class _VoiceHomeState extends State<VoiceHome> {
   SpeechRecognition _speechRecognition;
-  bool _isAvailable = false;
-  bool _isListening = false;
 
   String resultText = "";
 
@@ -33,25 +32,21 @@ class _VoiceHomeState extends State<VoiceHome> {
   void initSpeechRecognizer() {
     _speechRecognition = SpeechRecognition();
 
-    _speechRecognition.setAvailabilityHandler(
-      (bool result) => setState(() => _isAvailable = result),
-    );
-
-    _speechRecognition.setRecognitionStartedHandler(
-      () => setState(() => _isListening = true),
-    );
-
     _speechRecognition.setRecognitionResultHandler(
-      (String speech) => setState(() => resultText = speech),
-    );
-
-    _speechRecognition.setRecognitionCompleteHandler(
-      () => setState(() => _isListening = false),
-    );
-
-    _speechRecognition.activate().then(
-          (result) => setState(() => _isAvailable = result),
+        (String speech) {
+          List<String> speechList = speech.split(" ");
+          String finalText = speechList[speechList.length - 1];  
+          if (finalText == "stop") {
+            _speechRecognition.stop();
+          }
+        
+          setState(() => (resultText = finalText));
+          }
         );
+
+    _speechRecognition.setRecognitionCompleteHandler(() => _speechRecognition
+        .listen(locale: "en_US")
+        .then((result) => print("yo")));
   }
 
   @override
@@ -63,42 +58,22 @@ class _VoiceHomeState extends State<VoiceHome> {
           crossAxisAlignment: CrossAxisAlignment.center,
           children: <Widget>[
             Row(
+
+            ),
+            Row(
+
+            ),
+            Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: <Widget>[
                 FloatingActionButton(
-                  child: Icon(Icons.cancel),
-                  mini: true,
-                  backgroundColor: Colors.deepOrange,
-                  onPressed: () {
-                    if (_isListening)
-                      _speechRecognition.cancel().then(
-                            (result) => setState(() {
-                                  _isListening = result;
-                                  resultText = "";
-                                }),
-                          );
-                  },
-                ),
-                FloatingActionButton(
                   child: Icon(Icons.mic),
                   onPressed: () {
-                    if (_isAvailable && !_isListening)
                       _speechRecognition
                           .listen(locale: "en_US")
-                          .then((result) => print('$result'));
+                          .then((result) => print("yo"));
                   },
                   backgroundColor: Colors.pink,
-                ),
-                FloatingActionButton(
-                  child: Icon(Icons.stop),
-                  mini: true,
-                  backgroundColor: Colors.deepPurple,
-                  onPressed: () {
-                    if (_isListening)
-                      _speechRecognition.stop().then(
-                            (result) => setState(() => _isListening = result),
-                          );
-                  },
                 ),
               ],
             ),
@@ -112,9 +87,11 @@ class _VoiceHomeState extends State<VoiceHome> {
                 vertical: 8.0,
                 horizontal: 12.0,
               ),
-              child: Text(
-                resultText,
-                style: TextStyle(fontSize: 24.0),
+              child: Center(
+                child: Text(
+                  resultText,
+                  style: TextStyle(fontSize: 24.0),
+                ),
               ),
             )
           ],
