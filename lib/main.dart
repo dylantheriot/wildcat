@@ -4,6 +4,7 @@ import 'class_year_enums.dart';
 import 'class_year_button.dart';
 import 'globals.dart';
 import 'package:flutter_blue/flutter_blue.dart';
+import 'package:flutter/services.dart';
 
 void main() => runApp(MyApp());
 // Color(0xFF800000)
@@ -16,6 +17,10 @@ BluetoothDevice bluetoothDevice;
 class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
+    SystemChrome.setPreferredOrientations([
+        DeviceOrientation.portraitUp,
+        DeviceOrientation.portraitDown,
+      ]);
     return MaterialApp(
       home: VoiceHome(),
       debugShowCheckedModeBanner: false,
@@ -48,23 +53,31 @@ class _VoiceHomeState extends State<VoiceHome> {
     //start
     if (currClassYear == ClassYear.freshman && finalText.contains("23")) {
       btStart();
-    } else if (currClassYear == ClassYear.sophomore && finalText.contains("22")) {
+    } else if (currClassYear == ClassYear.sophomore &&
+        finalText.contains("22")) {
       btStart();
     } else if (currClassYear == ClassYear.junior && finalText.contains("21")) {
       btStart();
     } else if (currClassYear == ClassYear.senior && finalText.contains("20")) {
       btStart();
-    } else {
-    }
+    } else {}
     //stop
-    if (currClassYear == ClassYear.freshman && (finalText.contains("a") || finalText.contains("hey"))) {
+    if (currClassYear == ClassYear.freshman &&
+        (finalText == ("a") ||
+            finalText.contains("hey") ||
+            finalText.contains("aa"))) {
       btStop();
-    } else if (currClassYear == ClassYear.sophomore && finalText.contains("aaa")) {
+    } else if (currClassYear == ClassYear.sophomore &&
+        finalText.contains("aaa")) {
       btStop();
-    } else if ((currClassYear == ClassYear.junior || currClassYear == ClassYear.senior) && finalText.contains("whoop")) {
+    } else if ((currClassYear == ClassYear.junior ||
+            currClassYear == ClassYear.senior) &&
+        (finalText.contains("whoop") ||
+            finalText.contains("route") ||
+            finalText.contains("hoop") ||
+            finalText.contains("woop"))) {
       btStop();
-    } else {
-    }
+    } else {}
   }
 
   Future connectDevice(d) async {
@@ -111,8 +124,8 @@ class _VoiceHomeState extends State<VoiceHome> {
     }
   }
 
-    Future btStart() async {
-        List<BluetoothService> services = await bluetoothDevice.discoverServices();
+  Future btStart() async {
+    List<BluetoothService> services = await bluetoothDevice.discoverServices();
     services.forEach((service) async {
       var characteristics = service.characteristics;
       for (BluetoothCharacteristic c in characteristics) {
@@ -125,7 +138,7 @@ class _VoiceHomeState extends State<VoiceHome> {
   }
 
   Future btStop() async {
-        List<BluetoothService> services = await bluetoothDevice.discoverServices();
+    List<BluetoothService> services = await bluetoothDevice.discoverServices();
     services.forEach((service) async {
       var characteristics = service.characteristics;
       for (BluetoothCharacteristic c in characteristics) {
@@ -136,48 +149,16 @@ class _VoiceHomeState extends State<VoiceHome> {
       }
     });
   }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: Colors.white,
       body: SafeArea(
         child: Container(
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.center,
             children: <Widget>[
-              Row(
-                children: <Widget>[
-              StreamBuilder<List<BluetoothDevice>>(
-                stream: Stream.periodic(Duration(seconds: 2))
-                    .asyncMap((_) => FlutterBlue.instance.connectedDevices),
-                initialData: [],
-                builder: (c, snapshot) => Column(
-                      children: snapshot.data
-                          .map((d) => RaisedButton(
-                                child: Text('CONNECT'),
-                                onPressed: () {
-                                  connectDevice(d);
-                                },
-                              ))
-                          .toList(),
-                    ),
-              ),
-              StreamBuilder<List<BluetoothDevice>>(
-                stream: Stream.periodic(Duration(seconds: 2))
-                    .asyncMap((_) => FlutterBlue.instance.connectedDevices),
-                initialData: [],
-                builder: (c, snapshot) => Column(
-                      children: snapshot.data
-                          .map((d) => RaisedButton(
-                                child: Text('SET'),
-                                onPressed: () {
-                                  bluetoothDevice = d;
-                                },
-                              ))
-                          .toList(),
-                    ),
-              ),
-                ],
-              ),
               Expanded(
                 child: Row(
                   children: <Widget>[
@@ -278,16 +259,71 @@ class _VoiceHomeState extends State<VoiceHome> {
                   ),
                 ),
               ),
-              Container(
-                width: 150.0,
-                height: 120.0,
-                alignment: Alignment.center,
-                decoration: new BoxDecoration(
-                  image: DecorationImage(
-                      image: NetworkImage(
-                          'https://brandguide.tamu.edu/assets/img/logos/tam-logo.png'),
-                      fit: BoxFit.fill),
-                ),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                children: <Widget>[
+                  StreamBuilder<List<BluetoothDevice>>(
+                    stream: Stream.periodic(Duration(seconds: 2))
+                        .asyncMap((_) => FlutterBlue.instance.connectedDevices),
+                    initialData: [],
+                    builder: (c, snapshot) => Column(
+                          children: snapshot.data
+                              .map((d) => GestureDetector(
+                                    child: Container(
+                                      width: 101.0,
+                                      height: 100.0,
+                                      decoration: BoxDecoration(
+                                        image: DecorationImage(
+                                          image:
+                                              AssetImage('assets/reveille.png'),
+                                          fit: BoxFit.fill,
+                                        ),
+                                      ),
+                                    ),
+                                    onTap: () {
+                                      connectDevice(d);
+                                    },
+                                  ))
+                              .toList(),
+                        ),
+                  ),
+                  Container(
+                    width: 150.0,
+                    height: 120.0,
+                    alignment: Alignment.center,
+                    decoration: BoxDecoration(
+                      image: DecorationImage(
+                          image: NetworkImage(
+                              'https://brandguide.tamu.edu/assets/img/logos/tam-logo.png'),
+                          fit: BoxFit.fill),
+                    ),
+                  ),
+                  StreamBuilder<List<BluetoothDevice>>(
+                    stream: Stream.periodic(Duration(seconds: 2))
+                        .asyncMap((_) => FlutterBlue.instance.connectedDevices),
+                    initialData: [],
+                    builder: (c, snapshot) => Column(
+                          children: snapshot.data
+                              .map((d) => GestureDetector(
+                                    child: Container(
+                                      width: 101.0,
+                                      height: 100.0,
+                                      decoration: BoxDecoration(
+                                        image: DecorationImage(
+                                          image: AssetImage(
+                                              'assets/reveilleFlip.png'),
+                                          fit: BoxFit.fill,
+                                        ),
+                                      ),
+                                    ),
+                                    onTap: () {
+                                      bluetoothDevice = d;
+                                    },
+                                  ))
+                              .toList(),
+                        ),
+                  ),
+                ],
               ),
             ],
           ),
