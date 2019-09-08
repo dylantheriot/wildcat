@@ -3,11 +3,15 @@ import 'package:speech_recognition/speech_recognition.dart';
 import 'class_year_enums.dart';
 import 'class_year_button.dart';
 import 'globals.dart';
+import 'package:flutter_blue/flutter_blue.dart';
 
 void main() => runApp(MyApp());
 // Color(0xFF800000)
 Color activeColor = Color(0xFF500000);
 Color inactiveColor = Color(0xFF707373);
+
+FlutterBlue flutterBlue = FlutterBlue.instance;
+BluetoothDevice bluetoothDevice;
 
 class MyApp extends StatelessWidget {
   @override
@@ -40,18 +44,31 @@ class _VoiceHomeState extends State<VoiceHome> {
     initSpeechRecognizer();
   }
 
-  void checkWildcat(ClassYear x, String finalText) {
-    if (x == ClassYear.freshman && finalText == "23") {
-      print("FRESHMAN");
-    } else if (x == ClassYear.sophomore && finalText == "22") {
-      print("SOHOMORE");
-    } else if (x == ClassYear.junior && finalText == "21") {
-      print("JUNIOR");
-    } else if (x == ClassYear.senior && finalText == "20") {
-      print("SENIOR");
+  void checkWildcat(ClassYear currClassYear, String finalText) {
+    //start
+    if (currClassYear == ClassYear.freshman && finalText.contains("23")) {
+      btStart();
+    } else if (currClassYear == ClassYear.sophomore && finalText.contains("22")) {
+      btStart();
+    } else if (currClassYear == ClassYear.junior && finalText.contains("21")) {
+      btStart();
+    } else if (currClassYear == ClassYear.senior && finalText.contains("20")) {
+      btStart();
     } else {
-      print("NOBODY");
     }
+    //stop
+    if (currClassYear == ClassYear.freshman && (finalText.contains("a") || finalText.contains("hey"))) {
+      btStop();
+    } else if (currClassYear == ClassYear.sophomore && finalText.contains("aaa")) {
+      btStop();
+    } else if ((currClassYear == ClassYear.junior || currClassYear == ClassYear.senior) && finalText.contains("whoop")) {
+      btStop();
+    } else {
+    }
+  }
+
+  Future connectDevice(d) async {
+    await d.connect();
   }
 
   void initSpeechRecognizer() {
@@ -60,10 +77,7 @@ class _VoiceHomeState extends State<VoiceHome> {
     _speechRecognition.setRecognitionResultHandler((String speech) {
       List<String> speechList = speech.split(" ");
       String finalText = speechList[speechList.length - 1];
-      checkWildcat(ClassYear.freshman, finalText);
-      if (finalText == "stop") {
-        _speechRecognition.stop();
-      }
+      checkWildcat(gCurrentClassYear, finalText.toLowerCase());
 
       setState(() => (resultText = finalText));
     });
@@ -97,6 +111,31 @@ class _VoiceHomeState extends State<VoiceHome> {
     }
   }
 
+    Future btStart() async {
+        List<BluetoothService> services = await bluetoothDevice.discoverServices();
+    services.forEach((service) async {
+      var characteristics = service.characteristics;
+      for (BluetoothCharacteristic c in characteristics) {
+        if (c.serviceUuid.toString() ==
+            "0000ffe0-0000-1000-8000-00805f9b34fb") {
+          c.write([111]);
+        }
+      }
+    });
+  }
+
+  Future btStop() async {
+        List<BluetoothService> services = await bluetoothDevice.discoverServices();
+    services.forEach((service) async {
+      var characteristics = service.characteristics;
+      for (BluetoothCharacteristic c in characteristics) {
+        if (c.serviceUuid.toString() ==
+            "0000ffe0-0000-1000-8000-00805f9b34fb") {
+          c.write([103]);
+        }
+      }
+    });
+  }
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -105,6 +144,40 @@ class _VoiceHomeState extends State<VoiceHome> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.center,
             children: <Widget>[
+              Row(
+                children: <Widget>[
+              StreamBuilder<List<BluetoothDevice>>(
+                stream: Stream.periodic(Duration(seconds: 2))
+                    .asyncMap((_) => FlutterBlue.instance.connectedDevices),
+                initialData: [],
+                builder: (c, snapshot) => Column(
+                      children: snapshot.data
+                          .map((d) => RaisedButton(
+                                child: Text('CONNECT'),
+                                onPressed: () {
+                                  connectDevice(d);
+                                },
+                              ))
+                          .toList(),
+                    ),
+              ),
+              StreamBuilder<List<BluetoothDevice>>(
+                stream: Stream.periodic(Duration(seconds: 2))
+                    .asyncMap((_) => FlutterBlue.instance.connectedDevices),
+                initialData: [],
+                builder: (c, snapshot) => Column(
+                      children: snapshot.data
+                          .map((d) => RaisedButton(
+                                child: Text('SET'),
+                                onPressed: () {
+                                  bluetoothDevice = d;
+                                },
+                              ))
+                          .toList(),
+                    ),
+              ),
+                ],
+              ),
               Expanded(
                 child: Row(
                   children: <Widget>[
@@ -211,7 +284,8 @@ class _VoiceHomeState extends State<VoiceHome> {
                 alignment: Alignment.center,
                 decoration: new BoxDecoration(
                   image: DecorationImage(
-                      image: NetworkImage('https://brandguide.tamu.edu/assets/img/logos/tam-logo.png'),
+                      image: NetworkImage(
+                          'https://brandguide.tamu.edu/assets/img/logos/tam-logo.png'),
                       fit: BoxFit.fill),
                 ),
               ),
