@@ -1,6 +1,7 @@
 # wildcat
 
-A new Flutter project.
+This application was written for a HowdyHack 2019.
+The Wildcat app acts as a microphone to pick up individuals talking and transcribe their speech into text. This text is then parsed for the class years 23, 22, 21, and 20. If one of the class years is selected, and their class year is detected, the app sends a signal to the Arduino via bluetooth which causes the buzzer to buzz. Once the proper Wildcat is performed, the buzzer stops producing sound.
 
 ## Getting Started
 

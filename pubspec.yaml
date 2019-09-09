@@ -1,6 +1,9 @@
 name: wildcat
 description: A new Flutter project.
 
+authors:
+  Dylan Theriot https://github.com/dylantheriot
+  Mark Treviño https://github.com/matrev
 version: 1.0.0+1
 
 environment:
